@@ -20,6 +20,6 @@ class LocationController extends Controller
 
     public function villages($districtId)
     {
-        return Village::where('district_id', $districtId)->orderBy('name')->get(['id', 'name']);
+        return Village::where('district_id', $districtId)->orderBy('name')->get(['id', 'name', 'postal_code']);
     }
 }

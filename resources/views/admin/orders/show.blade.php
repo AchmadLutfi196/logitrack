@@ -3,7 +3,14 @@
 @section('page-title', 'Detail Order & Cetak Resi')
 
 @section('content')
-<div class="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="max-w-4xl mx-auto">
+    {{-- Back Button --}}
+    <a href="{{ route('admin.courier.index') }}" class="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-blue-600 transition-all active:scale-95 shadow-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+        Kembali ke Manajemen Pengiriman
+    </a>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <div class="lg:col-span-2">
         {{-- Tracking Timeline --}}
         <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
@@ -166,6 +173,7 @@
             Cetak Label
         </button>
     </div>
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>

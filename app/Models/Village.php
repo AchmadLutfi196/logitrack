@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Village extends Model
 {
     public $timestamps = false;
-    protected $fillable = ['district_id', 'name'];
+    protected $fillable = ['district_id', 'name', 'postal_code'];
 
     public function district(): BelongsTo
     {

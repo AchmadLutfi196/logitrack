@@ -63,7 +63,7 @@
                         </div>
                         <div>
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Kelurahan</label>
-                            <select required name="sender_village" x-model="senderVillage" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium disabled:opacity-50 appearance-none" :disabled="!senderDistrict">
+                            <select required name="sender_village" x-model="senderVillage" @change="senderPostalCode = (senderVillages.find(v => v.name === senderVillage) || {}).postal_code || ''" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium disabled:opacity-50 appearance-none" :disabled="!senderDistrict">
                                 <option value="">Pilih Kelurahan</option>
                                 <template x-for="v in senderVillages" :key="v.id"><option :value="v.name" x-text="v.name"></option></template>
                             </select>
@@ -71,7 +71,10 @@
                     </div>
                     <div>
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Kode Pos</label>
-                        <input required name="sender_postal_code" placeholder="Kode Pos" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium" value="{{ old('sender_postal_code') }}">
+                        <input required list="sender_postalcodes" name="sender_postal_code" x-model="senderPostalCode" placeholder="Pilih dropdown atau ketik Kode Pos" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium">
+                        <datalist id="sender_postalcodes">
+                            <template x-for="p in senderPostalCodes"><option :value="p"></option></template>
+                        </datalist>
                     </div>
                     <input type="hidden" name="sender_province" :value="senderProvinceName">
                     <input type="hidden" name="sender_city" :value="senderCityName">
@@ -132,7 +135,7 @@
                         </div>
                         <div>
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Kelurahan</label>
-                            <select required name="receiver_village" x-model="receiverVillage" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium disabled:opacity-50 appearance-none" :disabled="!receiverDistrict">
+                            <select required name="receiver_village" x-model="receiverVillage" @change="receiverPostalCode = (receiverVillages.find(v => v.name === receiverVillage) || {}).postal_code || ''" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium disabled:opacity-50 appearance-none" :disabled="!receiverDistrict">
                                 <option value="">Pilih Kelurahan</option>
                                 <template x-for="v in receiverVillages" :key="v.id"><option :value="v.name" x-text="v.name"></option></template>
                             </select>
@@ -140,7 +143,10 @@
                     </div>
                     <div>
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Kode Pos</label>
-                        <input required name="receiver_postal_code" placeholder="Kode Pos" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium" value="{{ old('receiver_postal_code') }}">
+                        <input required list="receiver_postalcodes" name="receiver_postal_code" x-model="receiverPostalCode" placeholder="Pilih dropdown atau ketik Kode Pos" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium">
+                        <datalist id="receiver_postalcodes">
+                            <template x-for="p in receiverPostalCodes"><option :value="p"></option></template>
+                        </datalist>
                     </div>
                     <input type="hidden" name="receiver_province" :value="receiverProvinceName">
                     <input type="hidden" name="receiver_city" :value="receiverCityName">
@@ -170,11 +176,11 @@
                         </div>
                         <div>
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Koli (Jumlah Paket)</label>
-                            <input type="number" name="koli" min="1" x-model.number="koli" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium">
+                            <input type="number" name="koli" min="1" x-model.number="koli" placeholder="1" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium">
                         </div>
                         <div>
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Total Berat Aktual (kg)</label>
-                            <input type="number" name="weight" min="0.1" step="0.1" value="1" x-model.number="weight" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium">
+                            <input type="number" name="weight" min="0.1" step="0.1" x-model.number="weight" placeholder="0.0" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium">
                         </div>
                     </div>
 
@@ -185,16 +191,16 @@
                                 <span class="text-blue-500 font-black" x-text="'Vol: ' + volumeWeight.toFixed(1) + ' kg'"></span>
                             </label>
                             <div class="flex items-center gap-2">
-                                <input type="number" name="length" min="1" x-model.number="length" placeholder="P" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium text-center">
+                                <input type="number" name="length" min="1" x-model.number="length" placeholder="P (cm)" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium text-center">
                                 <span class="text-slate-300 text-sm font-black shrink-0">×</span>
-                                <input type="number" name="width" min="1" x-model.number="width" placeholder="L" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium text-center">
+                                <input type="number" name="width" min="1" x-model.number="width" placeholder="L (cm)" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium text-center">
                                 <span class="text-slate-300 text-sm font-black shrink-0">×</span>
-                                <input type="number" name="height" min="1" x-model.number="height" placeholder="T" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium text-center">
+                                <input type="number" name="height" min="1" x-model.number="height" placeholder="T (cm)" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium text-center">
                             </div>
                         </div>
                         <div>
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Harga / kg (Rp)</label>
-                            <input type="number" name="price_per_kg" min="0" value="10000" x-model.number="pricePerKg" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium">
+                            <input type="number" name="price_per_kg" min="0" x-model.number="pricePerKg" placeholder="10000" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium">
                         </div>
                     </div>
 
@@ -272,14 +278,25 @@
 <script>
 function orderForm() {
     return {
-        weight: 1, pricePerKg: 10000, koli: 1,
-        length: 10, width: 10, height: 10,
-        senderProvince: '', senderCity: '', senderDistrict: '', senderVillage: '',
+        weight: null, pricePerKg: null, koli: null,
+        length: null, width: null, height: null,
+        senderProvince: '', senderCity: '', senderDistrict: '', senderVillage: '', senderPostalCode: '',
         senderCities: [], senderDistricts: [], senderVillages: [],
         senderProvinceName: '', senderCityName: '', senderDistrictName: '',
-        receiverProvince: '', receiverCity: '', receiverDistrict: '', receiverVillage: '',
+        receiverProvince: '', receiverCity: '', receiverDistrict: '', receiverVillage: '', receiverPostalCode: '',
         receiverCities: [], receiverDistricts: [], receiverVillages: [],
         receiverProvinceName: '', receiverCityName: '', receiverDistrictName: '',
+
+        get senderPostalCodes() {
+            const codes = new Set();
+            this.senderVillages.forEach(v => { if (v.postal_code) codes.add(v.postal_code); });
+            return Array.from(codes).sort();
+        },
+        get receiverPostalCodes() {
+            const codes = new Set();
+            this.receiverVillages.forEach(v => { if (v.postal_code) codes.add(v.postal_code); });
+            return Array.from(codes).sort();
+        },
 
         get volumeWeight() {
             const divisor = 4000;

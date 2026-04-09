@@ -15,6 +15,9 @@
         "vite": "^8.0.0"
     },
     "dependencies": {
-        "alpinejs": "^3.15.11"
+        "alpinejs": "^3.15.11",
+        "idn-area-data": "^4.0.1",
+        "kodepos": "^0.0.1",
+        "wilayah-indonesia": "^1.0.2"
     }
 }
