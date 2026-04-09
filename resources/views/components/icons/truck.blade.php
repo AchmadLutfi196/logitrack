@@ -1,0 +1,1 @@
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2" ry="2"/><path d="M16 8h2a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-2"/></svg>
