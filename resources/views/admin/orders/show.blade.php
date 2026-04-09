@@ -11,6 +11,33 @@
     </a>
 
     @php
+        $orderCreatedAtLocal = $order->created_at->copy()->timezone(config('app.timezone', 'Asia/Jakarta'));
+        $labelData = [
+            'payment_method' => strtoupper($order->payment_method),
+            'resi' => $order->resi,
+            'created_at' => $orderCreatedAtLocal->format('d/m/Y H:i') . ' WIB',
+            'sender_name' => $order->sender_name,
+            'sender_phone' => $order->sender_phone,
+            'sender_address' => $order->sender_address,
+            'sender_village' => $order->sender_village,
+            'sender_district' => $order->sender_district,
+            'sender_city' => $order->sender_city,
+            'sender_province' => $order->sender_province,
+            'sender_postal_code' => $order->sender_postal_code,
+            'receiver_name' => $order->receiver_name,
+            'receiver_phone' => $order->receiver_phone,
+            'receiver_address' => $order->receiver_address,
+            'receiver_village' => $order->receiver_village,
+            'receiver_district' => $order->receiver_district,
+            'receiver_city' => $order->receiver_city,
+            'receiver_province' => $order->receiver_province,
+            'receiver_postal_code' => $order->receiver_postal_code,
+            'weight' => number_format($order->weight, 2) . ' KG',
+            'koli' => (string) $order->koli,
+            'price_per_kg' => 'Rp ' . number_format($order->price_per_kg, 0, ',', '.'),
+            'reff_no' => $order->reff_no ?: '-',
+            'total_shipping' => 'Rp ' . number_format($order->total_shipping, 0, ',', '.'),
+        ];
         $statusColors = [
             'Pending' => 'bg-slate-400', 'Picked Up' => 'bg-blue-500', 'At Drop Point' => 'bg-indigo-500',
             'In Transit' => 'bg-amber-500', 'Arrived at Gateway' => 'bg-purple-500',
@@ -46,7 +73,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <span class="text-xs text-slate-400 font-medium">{{ $order->created_at->translatedFormat('d M Y, H:i') }}</span>
+                <span class="text-xs text-slate-400 font-medium">{{ $orderCreatedAtLocal->translatedFormat('d M Y, H:i') }} WIB</span>
                 <div class="px-5 py-2 rounded-xl text-white text-xs font-black shadow-lg uppercase tracking-wider {{ $statusColors[$order->current_status] ?? 'bg-slate-400' }}">
                     {{ $order->current_status }}
                 </div>
@@ -241,7 +268,7 @@
                     <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
                     Label Resi
                 </h3>
-                <button onclick="printLabel()" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-900 transition-all active:scale-95 shadow-sm">
+                <button id="print-label-btn" type="button" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-900 transition-all active:scale-95 shadow-sm">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
                     Cetak
                 </button>
@@ -267,7 +294,7 @@
                     <div class="flex-1 min-w-0">
                         <p class="text-[8px] text-slate-500 font-bold uppercase tracking-wider">No. AWB</p>
                         <p class="font-mono font-black text-lg tracking-wider text-slate-900 leading-tight break-all">{{ $order->resi }}</p>
-                        <p class="text-[8px] text-slate-400 mt-1">{{ $order->created_at->format('d/m/Y H:i') }}</p>
+                        <p class="text-[8px] text-slate-400 mt-1">{{ $orderCreatedAtLocal->format('d/m/Y H:i') }} WIB</p>
                     </div>
                 </div>
 
@@ -321,16 +348,48 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
+    var labelData = @json($labelData);
+
+    function esc(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        var qr = qrcode(0, 'H');
-        qr.addData('{{ $order->resi }}');
-        qr.make();
-        document.getElementById('qrcode').innerHTML = qr.createSvgTag(3);
+        var qrContainer = document.getElementById('qrcode');
+        if (qrContainer) {
+            qrContainer.innerHTML = '';
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(qrContainer, {
+                    text: '{{ $order->resi }}',
+                    width: 64,
+                    height: 64,
+                    colorDark: '#111827',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H,
+                });
+            } else {
+                qrContainer.innerHTML = '<span style="font-size:10px;color:#64748b;">QR gagal dimuat</span>';
+            }
+        }
+
+        var printBtn = document.getElementById('print-label-btn');
+        if (printBtn) {
+            printBtn.addEventListener('click', function() {
+                if (typeof window.printLabel === 'function') {
+                    window.printLabel();
+                }
+            });
+        }
     });
 
-    function printLabel() {
+    window.printLabel = function() {
         var qrEl = document.getElementById('qrcode');
         var qrHtml = qrEl ? qrEl.innerHTML : '';
 
@@ -348,7 +407,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Label {{ $order->resi }}</title>
+    <title>Label Resi</title>
 <style>
 @page { size: 105mm 148mm; margin: 3mm; }
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -362,7 +421,7 @@ body { font-family: Arial, Helvetica, sans-serif; }
 .pay-val { font-size:13px; font-weight:900; color:#111; }
 .qr-row { display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:2px solid #111; background:#f8f8f8; }
 .qr-box { flex-shrink:0; background:#fff; padding:3px; border:1px solid #ccc; }
-.qr-box svg { display:block; }
+    .qr-box svg, .qr-box img, .qr-box canvas { display:block; width:64px !important; height:64px !important; }
 .awb-lbl { font-size:7px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#666; }
 .awb-num { font-family:monospace; font-size:16px; font-weight:900; letter-spacing:2px; color:#111; }
 .awb-date { font-size:7px; color:#999; margin-top:2px; }
@@ -388,34 +447,44 @@ table.det td { padding:5px 8px; font-size:8px; }
 <body>
 <div class="label">
     <div class="header">
-        <div><div class="logo">LOGITRACK</div><div class="logo-sub">Express Delivery</div></div>
-        <div class="pay-box"><div class="pay-lbl">Pembayaran</div><div class="pay-val">{{ strtoupper($order->payment_method) }}</div></div>
+        <div>
+            <div class="logo">LOGITRACK</div>
+            <div class="logo-sub">Express Delivery</div>
+        </div>
+        <div class="pay-box">
+            <div class="pay-lbl">Pembayaran</div>
+            <div class="pay-val">${esc(labelData.payment_method)}</div>
+        </div>
     </div>
     <div class="qr-row">
-        <div class="qr-box">` + qrHtml + `</div>
-        <div><div class="awb-lbl">No. AWB</div><div class="awb-num">{{ $order->resi }}</div><div class="awb-date">{{ $order->created_at->format('d/m/Y H:i') }}</div></div>
+        <div class="qr-box">${qrHtml}</div>
+        <div>
+            <div class="awb-lbl">No. AWB</div>
+            <div class="awb-num">${esc(labelData.resi)}</div>
+            <div class="awb-date">${esc(labelData.created_at)}</div>
+        </div>
     </div>
     <div class="sec">
         <div class="sec-title"><span class="dot-b"></span> PENGIRIM</div>
-        <div class="nm">{{ $order->sender_name }} — {{ $order->sender_phone }}</div>
-        <div class="ad">{{ $order->sender_address }}, {{ $order->sender_village }}, {{ $order->sender_district }}</div>
-        <div class="ad">{{ $order->sender_city }}, {{ $order->sender_province }} {{ $order->sender_postal_code }}</div>
+        <div class="nm">${esc(labelData.sender_name)} - ${esc(labelData.sender_phone)}</div>
+        <div class="ad">${esc(labelData.sender_address)}, ${esc(labelData.sender_village)}, ${esc(labelData.sender_district)}</div>
+        <div class="ad">${esc(labelData.sender_city)}, ${esc(labelData.sender_province)} ${esc(labelData.sender_postal_code)}</div>
     </div>
     <div class="sec-rcv">
         <div class="sec-title"><span class="dot-r"></span> PENERIMA</div>
-        <div class="nm-big">{{ $order->receiver_name }} — {{ $order->receiver_phone }}</div>
-        <div class="ad-b">{{ $order->receiver_address }}, {{ $order->receiver_village }}, {{ $order->receiver_district }}</div>
-        <div class="ad-b">{{ $order->receiver_city }}, {{ $order->receiver_province }} {{ $order->receiver_postal_code }}</div>
+        <div class="nm-big">${esc(labelData.receiver_name)} - ${esc(labelData.receiver_phone)}</div>
+        <div class="ad-b">${esc(labelData.receiver_address)}, ${esc(labelData.receiver_village)}, ${esc(labelData.receiver_district)}</div>
+        <div class="ad-b">${esc(labelData.receiver_city)}, ${esc(labelData.receiver_province)} ${esc(labelData.receiver_postal_code)}</div>
     </div>
     <table class="det">
         <tr><td class="tl tbr" style="width:50%">Berat</td><td class="tl">Koli</td></tr>
-        <tr><td class="tv tbr">{{ number_format($order->weight, 2) }} KG</td><td class="tv">{{ $order->koli }}</td></tr>
+        <tr><td class="tv tbr">${esc(labelData.weight)}</td><td class="tv">${esc(labelData.koli)}</td></tr>
         <tr><td class="tl tbr">Harga / KG</td><td class="tl">No. Reff</td></tr>
-        <tr><td class="tv tbr">Rp {{ number_format($order->price_per_kg, 0, ',', '.') }}</td><td class="tv" style="font-size:10px">{{ $order->reff_no ?: '-' }}</td></tr>
+        <tr><td class="tv tbr">${esc(labelData.price_per_kg)}</td><td class="tv" style="font-size:10px">${esc(labelData.reff_no)}</td></tr>
     </table>
     <div class="ft">
         <span class="ft-lbl">Total Ongkos Kirim</span>
-        <span class="ft-val">Rp {{ number_format($order->total_shipping, 0, ',', '.') }}</span>
+        <span class="ft-val">${esc(labelData.total_shipping)}</span>
     </div>
 </div>
 </body>
@@ -428,6 +497,6 @@ table.det td { padding:5px 8px; font-size:8px; }
                 iframe.contentWindow.print();
             }, 100);
         };
-    }
+    };
 </script>
 @endsection
