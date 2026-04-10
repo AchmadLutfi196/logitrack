@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-white font-sans" x-data>
+<body class="min-h-screen bg-white font-sans" x-data="{ previewImage: null }">
 
     {{-- Header --}}
     <header class="bg-white border-b border-slate-100 sticky top-0 z-50">
@@ -194,7 +194,9 @@
                         <p class="text-[10px] text-slate-400 uppercase tracking-wider mt-1">{{ $log->location }}</p>
                         @if($log->image)
                             <div class="mt-3 rounded-xl overflow-hidden border border-slate-200 max-w-xs shadow-sm shadow-slate-200">
-                                <img src="{{ asset('storage/' . $log->image) }}" alt="Bukti Log" class="w-full h-auto object-cover">
+                                <button type="button" @click="previewImage = @js(asset('storage/' . $log->image))" class="block group w-full" title="Klik untuk melihat gambar">
+                                    <img src="{{ asset('storage/' . $log->image) }}" alt="Bukti Log" class="w-full h-auto object-cover transition-opacity duration-200 group-hover:opacity-90 cursor-zoom-in">
+                                </button>
                             </div>
                         @endif
                     </div>
@@ -248,6 +250,15 @@
             © 2026 LOGITRACK. ALL RIGHTS RESERVED.
         </div>
     </footer>
+
+    <div x-show="previewImage" x-transition.opacity class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm p-4 flex items-center justify-center" @click.self="previewImage = null" @keydown.escape.window="previewImage = null">
+        <div class="relative w-full max-w-4xl bg-white rounded-2xl p-3 sm:p-4 shadow-2xl border border-slate-200">
+            <button type="button" @click="previewImage = null" class="absolute -top-3 -right-3 w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-sm flex items-center justify-center" aria-label="Tutup preview gambar">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <img :src="previewImage" alt="Preview Foto" class="w-full max-h-[80vh] object-contain rounded-xl bg-slate-50">
+        </div>
+    </div>
 
     {{-- Admin Login --}}
     <a href="{{ route('admin.orders.create') }}" class="fixed bottom-4 left-4 z-[100] bg-white/10 hover:bg-white/20 text-white/20 hover:text-white/50 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all backdrop-blur-sm border border-white/5">Admin Login</a>

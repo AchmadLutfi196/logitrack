@@ -3,7 +3,7 @@
 @section('page-title', 'Detail Order & Cetak Resi')
 
 @section('content')
-<div class="max-w-7xl mx-auto">
+<div class="max-w-7xl mx-auto" x-data="{ previewImage: null }">
     {{-- Back Button --}}
     <a href="{{ route('admin.courier.index') }}" class="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-blue-600 transition-all active:scale-95 shadow-sm">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
@@ -225,7 +225,9 @@
                                     </div>
                                     @if($log->image)
                                     <div class="mt-2 rounded-lg overflow-hidden border border-slate-100 max-w-[200px]">
-                                        <img src="{{ asset('storage/' . $log->image) }}" alt="Bukti" class="w-full h-auto">
+                                        <button type="button" @click="previewImage = @js(asset('storage/' . $log->image))" class="block group w-full" title="Klik untuk melihat gambar">
+                                            <img src="{{ asset('storage/' . $log->image) }}" alt="Bukti" class="w-full h-auto transition-opacity duration-200 group-hover:opacity-90 cursor-zoom-in">
+                                        </button>
                                     </div>
                                     @endif
                                 </div>
@@ -248,7 +250,9 @@
                 <div class="p-5">
                     <div class="aspect-video bg-white rounded-xl border border-emerald-200 flex items-center justify-center overflow-hidden max-w-sm">
                         @if($order->pod_photo)
-                            <img src="{{ asset('storage/' . $order->pod_photo) }}" alt="POD" class="w-full h-full object-cover">
+                            <button type="button" @click="previewImage = @js(asset('storage/' . $order->pod_photo))" class="w-full h-full block group" title="Klik untuk melihat gambar POD">
+                                <img src="{{ asset('storage/' . $order->pod_photo) }}" alt="POD" class="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-90 cursor-zoom-in">
+                            </button>
                         @else
                             <div class="text-emerald-300 text-center p-4"><p class="text-xs">Foto belum tersedia</p></div>
                         @endif
@@ -344,6 +348,15 @@
                     <span class="text-base font-black">Rp {{ number_format($order->total_shipping, 0, ',', '.') }}</span>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div x-show="previewImage" x-transition.opacity class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm p-4 flex items-center justify-center" @click.self="previewImage = null" @keydown.escape.window="previewImage = null">
+        <div class="relative w-full max-w-4xl bg-white rounded-2xl p-3 sm:p-4 shadow-2xl border border-slate-200">
+            <button type="button" @click="previewImage = null" class="absolute -top-3 -right-3 w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-sm flex items-center justify-center" aria-label="Tutup preview gambar">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <img :src="previewImage" alt="Preview Foto" class="w-full max-h-[80vh] object-contain rounded-xl bg-slate-50">
         </div>
     </div>
 </div>
