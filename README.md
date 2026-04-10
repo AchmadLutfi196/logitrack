@@ -13,7 +13,7 @@
 
 ## 🛠️ Stack Teknologi
 
-- **Backend:** Laravel 11.x (PHP 8.2+)
+- **Backend:** Laravel 13.x (PHP 8.2+)
 - **Database:** MySQL
 - **Frontend / Styling:** Blade Templating, Tailwind CSS, Alpine.js
 - **Ekstensi & Pustaka:** qrcode-generator, SweetAlert2
