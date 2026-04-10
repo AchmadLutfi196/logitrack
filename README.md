@@ -75,6 +75,7 @@ php artisan db:seed
 ### 6. Jalankan Server
 Jalankan server aplikasi secara lokal:
 ```bash
+npm run dev
 php artisan serve
 ```
 Akses aplikasi melalui browser di: `http://localhost:8000`
