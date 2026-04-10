@@ -18,11 +18,9 @@ class CourierController extends Controller
                 $q->where('resi', 'like', "%{$search}%")
                   ->orWhere('receiver_name', 'like', "%{$search}%");
             });
-        } else {
-            $query->where('current_status', '!=', 'Delivered');
         }
 
-        $orders = $query->orderBy('created_at', 'desc')->get();
+        $orders = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
         return view('admin.courier.index', compact('orders', 'search'));
     }
 
@@ -33,6 +31,12 @@ class CourierController extends Controller
             'location' => 'required|string',
             'description' => 'required|string',
             'image' => 'nullable|image|max:2048',
+        ], [
+            'status.required' => 'Status pengiriman wajib dipilih.',
+            'location.required' => 'Lokasi saat ini wajib diisi.',
+            'description.required' => 'Keterangan log wajib diisi.',
+            'image.image' => 'File yang diupload harus berupa gambar.',
+            'image.max' => 'Ukuran gambar maksimal 2 MB. Silakan pilih gambar lain.',
         ]);
 
         $imagePath = null;

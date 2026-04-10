@@ -20,7 +20,7 @@ class BillingController extends Controller
             });
         }
 
-        $orders = $query->orderBy('created_at', 'desc')->get();
+        $orders = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
         return view('admin.billing.index', compact('orders', 'search'));
     }
 

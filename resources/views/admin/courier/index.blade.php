@@ -3,7 +3,11 @@
 @section('page-title', 'Tugas Kurir')
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6" x-data="{ logModal: false, selectedOrder: null }">
+@php
+    $oldOrderId = old('order_id');
+    $oldOrder = $oldOrderId ? $orders->firstWhere('id', (int) $oldOrderId) : null;
+@endphp
+<div class="max-w-4xl mx-auto space-y-6" x-data="{ logModal: @js($errors->any()), selectedOrder: @js($oldOrder ? ['id' => $oldOrder->id, 'resi' => $oldOrder->resi] : null) }">
     <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div>
@@ -64,7 +68,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18.25 6.875V3.375"/></svg>
                         Detail & Cetak Resi
                     </a>
-                    <button @click="selectedOrder = {{ $order->toJson() }}; logModal = true"
+                    <button @click='selectedOrder = @json(["id" => $order->id, "resi" => $order->resi]); logModal = true'
                         class="flex-1 md:flex-none px-5 py-3 bg-slate-900 text-white text-sm font-black rounded-xl hover:bg-slate-800 shadow-lg shadow-slate-200 transition-all active:scale-95 flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
                         Update Log
@@ -77,6 +81,12 @@
                 <p class="text-slate-400 font-bold">Tidak ada pesanan yang ditemukan</p>
             </div>
             @endforelse
+
+            @if($orders->hasPages())
+            <div class="pt-4 border-t border-slate-100">
+                @include('admin.partials.pagination', ['paginator' => $orders])
+            </div>
+            @endif
         </div>
     </div>
 
@@ -94,7 +104,8 @@
                         <button type="button" @click="logModal = false" class="p-2 hover:bg-slate-200 rounded-full transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
                     </div>
 
-                    <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto" x-data="{ selectedStatus: '', fileName: '' }">
+                    <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto" x-data="{ selectedStatus: @js(old('status', '')), fileName: '', fileError: '' }">
+                        <input type="hidden" name="order_id" :value="selectedOrder ? selectedOrder.id : ''">
                         @if($errors->any())
                             <div class="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-bold border border-red-100">
                                 <ul class="list-disc list-inside">
@@ -130,26 +141,40 @@
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lokasi Saat Ini</label>
                                 <input type="text" name="location" required placeholder="Contoh: DC Jakarta, Drop Point Bandung"
+                                    value="{{ old('location') }}"
                                     class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Keterangan Log</label>
                                 <textarea name="description" required rows="3" placeholder="Masukkan detail proses pengiriman..."
-                                    class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium resize-none"></textarea>
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium resize-none">{{ old('description') }}</textarea>
                             </div>
                             <div class="space-y-2">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Foto Bukti (Opsional)</label>
                                 <label class="flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed border-slate-200 rounded-2xl hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer">
                                     <span class="text-xs font-bold text-slate-500 flex items-center gap-1 text-center" x-text="fileName ? fileName : 'Ambil Foto / Upload'"></span>
-                                    <input type="file" name="image" accept="image/*" class="hidden" @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
+                                    <input type="file" name="image" accept="image/*" class="hidden" @change="
+                                        const file = $event.target.files[0];
+                                        fileName = file ? file.name : '';
+                                        fileError = '';
+                                        if (file && file.size > 2048 * 1024) {
+                                            fileError = 'Ukuran gambar maksimal 2 MB. Silakan pilih gambar lain.';
+                                            $event.target.value = '';
+                                            fileName = '';
+                                        }
+                                    ">
                                 </label>
+                                @error('image')
+                                    <p class="text-xs font-bold text-red-600">{{ $message }}</p>
+                                @enderror
+                                <p x-show="fileError" x-text="fileError" class="text-xs font-bold text-red-600"></p>
                             </div>
                         </div>
                     </div>
 
                     <div class="p-6 bg-slate-50 flex gap-3">
                         <button type="button" @click="logModal = false" class="flex-1 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-all">Batal</button>
-                        <button type="submit" class="flex-[2] py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">Simpan Update</button>
+                        <button type="submit" :disabled="fileError !== '' || !selectedStatus" class="flex-[2] py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all disabled:bg-slate-300 disabled:shadow-none disabled:cursor-not-allowed">Simpan Update</button>
                     </div>
                 </form>
             </div>

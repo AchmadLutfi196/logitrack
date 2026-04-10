@@ -11,7 +11,8 @@ class ReceiverController extends Controller
         $receivers = Order::select('receiver_name', 'receiver_phone', 'receiver_address', 'receiver_city')
             ->distinct('receiver_phone')
             ->groupBy('receiver_phone', 'receiver_name', 'receiver_address', 'receiver_city')
-            ->get();
+            ->orderBy('receiver_name')
+            ->paginate(10);
 
         return view('admin.receivers.index', compact('receivers'));
     }

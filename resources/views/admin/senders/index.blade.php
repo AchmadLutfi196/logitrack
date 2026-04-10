@@ -35,6 +35,11 @@
                 </tbody>
             </table>
         </div>
+        @if($senders->hasPages())
+        <div class="p-4 border-t border-slate-100">
+            @include('admin.partials.pagination', ['paginator' => $senders])
+        </div>
+        @endif
     </div>
 </div>
 @endsection

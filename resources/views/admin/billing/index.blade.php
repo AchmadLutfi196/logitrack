@@ -61,6 +61,11 @@
                 </tbody>
             </table>
         </div>
+        @if($orders->hasPages())
+        <div class="p-4 border-t border-slate-100">
+            @include('admin.partials.pagination', ['paginator' => $orders])
+        </div>
+        @endif
     </div>
 
     {{-- Billing Update Modal --}}
