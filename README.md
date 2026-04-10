@@ -67,8 +67,8 @@ php artisan storage:link
 ### 5. Migrasi & Seeding Database
 **Penting:** Proses seeding awal akan memasukkan >83.000 data wilayah ke dalam tabel MySQL. Pastikan konfigurasi database sudah benar.
 ```bash
-php artisan migrate --force
-php artisan db:seed --class=LocationSeeder --force
+php artisan migrate
+php artisan db:seed
 ```
 *(Catatan: LocationSeeder akan mengimpor data seluruh provinsi, kota, dan wilayah Indonesia dari file CSV lokal ke dalam database menggunakan sistem batch-insert).*
 
