@@ -63,7 +63,7 @@
                         </div>
                         <div>
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Kelurahan</label>
-                            <select required name="sender_village" x-model="senderVillage" @change="senderPostalCode = (senderVillages.find(v => v.name === senderVillage) || {}).postal_code || ''" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium disabled:opacity-50 appearance-none" :disabled="!senderDistrict">
+                            <select required name="sender_village" x-model="senderVillage" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium disabled:opacity-50 appearance-none" :disabled="!senderDistrict">
                                 <option value="">Pilih Kelurahan</option>
                                 <template x-for="v in senderVillages" :key="v.id"><option :value="v.name" x-text="v.name"></option></template>
                             </select>
@@ -71,10 +71,7 @@
                     </div>
                     <div>
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Kode Pos</label>
-                        <input required list="sender_postalcodes" name="sender_postal_code" x-model="senderPostalCode" placeholder="Pilih dropdown atau ketik Kode Pos" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium">
-                        <datalist id="sender_postalcodes">
-                            <template x-for="p in senderPostalCodes"><option :value="p"></option></template>
-                        </datalist>
+                        <input required name="sender_postal_code" x-model="senderPostalCode" placeholder="Ketik Kode Pos" maxlength="5" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium">
                     </div>
                     <input type="hidden" name="sender_province" :value="senderProvinceName">
                     <input type="hidden" name="sender_city" :value="senderCityName">
@@ -135,7 +132,7 @@
                         </div>
                         <div>
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Kelurahan</label>
-                            <select required name="receiver_village" x-model="receiverVillage" @change="receiverPostalCode = (receiverVillages.find(v => v.name === receiverVillage) || {}).postal_code || ''" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium disabled:opacity-50 appearance-none" :disabled="!receiverDistrict">
+                            <select required name="receiver_village" x-model="receiverVillage" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium disabled:opacity-50 appearance-none" :disabled="!receiverDistrict">
                                 <option value="">Pilih Kelurahan</option>
                                 <template x-for="v in receiverVillages" :key="v.id"><option :value="v.name" x-text="v.name"></option></template>
                             </select>
@@ -143,10 +140,7 @@
                     </div>
                     <div>
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Kode Pos</label>
-                        <input required list="receiver_postalcodes" name="receiver_postal_code" x-model="receiverPostalCode" placeholder="Pilih dropdown atau ketik Kode Pos" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium">
-                        <datalist id="receiver_postalcodes">
-                            <template x-for="p in receiverPostalCodes"><option :value="p"></option></template>
-                        </datalist>
+                        <input required name="receiver_postal_code" x-model="receiverPostalCode" placeholder="Ketik Kode Pos" maxlength="5" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all text-sm font-medium">
                     </div>
                     <input type="hidden" name="receiver_province" :value="receiverProvinceName">
                     <input type="hidden" name="receiver_city" :value="receiverCityName">
@@ -287,16 +281,7 @@ function orderForm() {
         receiverCities: [], receiverDistricts: [], receiverVillages: [],
         receiverProvinceName: '', receiverCityName: '', receiverDistrictName: '',
 
-        get senderPostalCodes() {
-            const codes = new Set();
-            this.senderVillages.forEach(v => { if (v.postal_code) codes.add(v.postal_code); });
-            return Array.from(codes).sort();
-        },
-        get receiverPostalCodes() {
-            const codes = new Set();
-            this.receiverVillages.forEach(v => { if (v.postal_code) codes.add(v.postal_code); });
-            return Array.from(codes).sort();
-        },
+
 
         get volumeWeight() {
             const divisor = 4000;
