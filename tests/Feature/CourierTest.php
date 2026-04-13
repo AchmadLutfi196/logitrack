@@ -66,6 +66,7 @@ class CourierTest extends TestCase
         $response->assertRedirect();
 
         $order->refresh();
+        $this->assertNotNull($order->pod_photo);
         $this->assertEquals($order->receiver_name, $order->pod_receiver_name);
         $this->assertEquals('Delivered', $order->current_status);
         

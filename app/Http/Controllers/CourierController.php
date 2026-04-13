@@ -57,7 +57,11 @@ class CourierController extends Controller
         $order->update(['current_status' => $validated['status']]);
 
         if ($validated['status'] === 'Delivered') {
-            $order->update(['pod_receiver_name' => $order->receiver_name]);
+            $updateData = ['pod_receiver_name' => $order->receiver_name];
+            if ($imagePath) {
+                $updateData['pod_photo'] = $imagePath;
+            }
+            $order->update($updateData);
         }
 
         return back()->with('success', 'Status pengiriman berhasil diupdate!');

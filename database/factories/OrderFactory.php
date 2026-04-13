@@ -20,7 +20,7 @@ class OrderFactory extends Factory
         return [
             'resi' => \App\Models\Order::generateResi(),
             'sender_name' => $this->faker->name(),
-            'sender_phone' => $this->faker->phoneNumber(),
+            'sender_phone' => $this->faker->numerify('08##########'),
             'sender_address' => $this->faker->address(),
             'sender_province' => 'Jawa Barat',
             'sender_city' => 'Bandung',
@@ -28,7 +28,7 @@ class OrderFactory extends Factory
             'sender_village' => 'Dago',
             'sender_postal_code' => '40135',
             'receiver_name' => $this->faker->name(),
-            'receiver_phone' => $this->faker->phoneNumber(),
+            'receiver_phone' => $this->faker->numerify('08##########'),
             'receiver_address' => $this->faker->address(),
             'receiver_province' => 'DKI Jakarta',
             'receiver_city' => 'Jakarta Selatan',

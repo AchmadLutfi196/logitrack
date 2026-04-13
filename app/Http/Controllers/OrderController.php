@@ -19,7 +19,7 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'sender_name' => 'required|string|max:255',
-            'sender_phone' => 'required|string|max:20',
+            'sender_phone' => 'required|string|regex:/^[0-9]+$/|max:20',
             'sender_address' => 'required|string',
             'sender_province' => 'required|string',
             'sender_city' => 'required|string',
@@ -27,7 +27,7 @@ class OrderController extends Controller
             'sender_village' => 'required|string',
             'sender_postal_code' => 'required|string|max:10',
             'receiver_name' => 'required|string|max:255',
-            'receiver_phone' => 'required|string|max:20',
+            'receiver_phone' => 'required|string|regex:/^[0-9]+$/|max:20',
             'receiver_address' => 'required|string',
             'receiver_province' => 'required|string',
             'receiver_city' => 'required|string',
