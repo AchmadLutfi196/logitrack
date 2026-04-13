@@ -36,8 +36,8 @@
                 ];
             @endphp
             <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-blue-200 transition-all">
-                <div class="flex gap-4 items-start">
-                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg {{ $iconColors[$order->current_status] ?? 'bg-slate-400' }}">
+                <div class="flex gap-4 items-start flex-1 min-w-0">
+                    <div class="w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center text-white shadow-lg {{ $iconColors[$order->current_status] ?? 'bg-slate-400' }}">
                         @if($order->current_status === 'Delivered')
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         @elseif($order->current_status === 'Failed')
@@ -50,15 +50,18 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                         @endif
                     </div>
-                    <div class="space-y-1">
+                    <div class="space-y-1 flex-1 min-w-0">
                         <div class="flex items-center gap-2">
-                            <p class="text-xs font-bold text-blue-600">{{ $order->resi }}</p>
+                            <p class="text-xs font-bold text-blue-600 truncate">{{ $order->resi }}</p>
                         </div>
-                        <p class="font-black text-slate-800 text-lg">{{ $order->receiver_name }}</p>
-                        <p class="text-xs text-slate-500 flex items-center gap-1"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg> {{ $order->receiver_address }}, {{ $order->receiver_city }}</p>
+                        <p class="font-black text-slate-800 text-lg truncate" title="{{ $order->receiver_name }}">{{ $order->receiver_name }}</p>
+                        <p class="text-xs text-slate-500 flex items-start gap-1">
+                            <svg class="w-3.5 h-3.5 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg> 
+                            <span class="truncate" title="{{ $order->receiver_address }}, {{ $order->receiver_city }}">{{ $order->receiver_address }}, {{ $order->receiver_city }}</span>
+                        </p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 shrink-0">
                     <div class="text-right hidden md:block mr-2">
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status Terakhir</p>
                         <p class="text-sm font-bold {{ $textColors[$order->current_status] ?? 'text-slate-700' }}">{{ $order->current_status }}</p>
