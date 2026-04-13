@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'resi', 'sender_name', 'sender_phone', 'sender_address',
         'sender_province', 'sender_city', 'sender_district', 'sender_village', 'sender_postal_code',
